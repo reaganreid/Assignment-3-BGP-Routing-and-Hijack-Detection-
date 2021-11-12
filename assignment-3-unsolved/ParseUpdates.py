@@ -52,6 +52,10 @@ class ParseUpdates:
 
         :return: True if parsing was completed successfully. False otherwise.
         """
+        for entry in mrtparse.Reader(self.filename):
+            print (entry)
+
+
         start_time = time.time()
         ###
         # fill in your code here
