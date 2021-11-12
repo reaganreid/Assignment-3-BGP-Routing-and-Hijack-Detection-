@@ -62,10 +62,14 @@ class ParseUpdates:
             entry_source_peer = entry_data['peer_as']
             entry_bgpMessage = entry_data['bgp_message']
             
-        self.__parse_announcement_updates(self, entry_timestamp, entry_source_peer, entry_bgpMessage)
-        self.__parse_withdrawal_updates(self, entry_timestamp, entry_source_peer, entry_bgpMessage)
+        self.__parse_announcement_updates(entry_timestamp, entry_source_peer, entry_bgpMessage)
+        self.__parse_withdrawal_updates(entry_timestamp, entry_source_peer, entry_bgpMessage)
 
-        print(entry_bgpMessage["path_attributes"])
+
+
+        #for item in entry_bgpMessage['path_attributes']:
+        #    for node in item:
+        #        print(node)
 
         self.time_to_parse = time.time() - start_time
         logging.info("Time taken to parse all records: %d second(s)" % self.time_to_parse)
@@ -99,7 +103,10 @@ class ParseUpdates:
         :return: True if announcements were properly recorded. False otherwise.
         """
         ###
-        self.n_announcements 
+        self.n_announcements = bgp_message['length'] + self.n_announcements
+
+        for item in bgp_message:
+            print(bgp_message[item])
 
         ###
         return True
