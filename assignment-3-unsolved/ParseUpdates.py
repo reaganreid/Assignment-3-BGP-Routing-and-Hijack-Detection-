@@ -65,7 +65,7 @@ class ParseUpdates:
         self.__parse_announcement_updates(self, entry_timestamp, entry_source_peer, entry_bgpMessage)
         self.__parse_withdrawal_updates(self, entry_timestamp, entry_source_peer, entry_bgpMessage)
 
-
+        print(entry_bgpMessage["path_attributes"])
 
         self.time_to_parse = time.time() - start_time
         logging.info("Time taken to parse all records: %d second(s)" % self.time_to_parse)
@@ -99,7 +99,8 @@ class ParseUpdates:
         :return: True if announcements were properly recorded. False otherwise.
         """
         ###
-        # fill in your code here
+        self.n_announcements 
+
         ###
         return True
 
