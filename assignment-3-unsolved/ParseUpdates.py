@@ -10,6 +10,7 @@ implement methods to read a supplied MRT file and extract specific information
 about announced and withdrawn routes. You will then use this information to
 build your routing table.
 
+
 """
 
 import mrtparse
@@ -52,17 +53,20 @@ class ParseUpdates:
 
         :return: True if parsing was completed successfully. False otherwise.
         """
+            
+        start_time = time.time()
+
         for entry in mrtparse.Reader(self.filename):
             entry_data = entry.data
-            print(entry_data)
-            entry_timestamp1 = entry_data['timestamp'][0]
-            entry_timestamp2 = entry_data['timestamp'][1]
+            entry_timestamp = entry_data['timestamp']
+            entry_source_peer = entry_data['peer_as']
+            entry_bgpMessage = entry_data['bgp_message']
+            
+        self.__parse_announcement_updates(self, entry_timestamp, entry_source_peer, entry_bgpMessage)
+        self.__parse_withdrawal_updates(self, entry_timestamp, entry_source_peer, entry_bgpMessage)
 
 
-        start_time = time.time()
-        ###
-        # fill in your code here
-        ###
+
         self.time_to_parse = time.time() - start_time
         logging.info("Time taken to parse all records: %d second(s)" % self.time_to_parse)
         logging.info("Routes announced: %d | Routes withdrawn: %d" % (self.n_announcements, self.n_withdrawals))
