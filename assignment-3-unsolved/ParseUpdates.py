@@ -61,9 +61,8 @@ class ParseUpdates:
             entry_timestamp = entry_data['timestamp']
             entry_source_peer = entry_data['peer_as']
             entry_bgpMessage = entry_data['bgp_message']
-            
-        self.__parse_announcement_updates(entry_timestamp, entry_source_peer, entry_bgpMessage)
-        self.__parse_withdrawal_updates(entry_timestamp, entry_source_peer, entry_bgpMessage)
+            self.__parse_announcement_updates(entry_timestamp, entry_source_peer, entry_bgpMessage)
+            self.__parse_withdrawal_updates(entry_timestamp, entry_source_peer, entry_bgpMessage)
 
 
 
@@ -104,9 +103,26 @@ class ParseUpdates:
         """
         ###
         self.n_announcements = bgp_message['length'] + self.n_announcements
+        update = {}
+        #for item in bgp_message:
+        #    print(bgp_message[item])
 
-        for item in bgp_message:
-            print(bgp_message[item])
+        message_packet  = bgp_message['path_attributes']
+        for item in message_packet:
+            if item['type'][1] == 'ORIGIN':
+                origin_length = item['length']
+                origin_value = item['value']
+            if item['type'][1] == 'AS_PATH':
+                as_path_data = item['value']
+            if item['type'][1] == 'NEXT_HOP':
+                next_hop_data = item['value']
+
+        update = {
+            'timestamp' : timestamp,
+            'peer_as' : peer_as,
+            'as_path' : as_path_data,
+            'next_hop' : next_hop_data,
+        }
 
         ###
         return True

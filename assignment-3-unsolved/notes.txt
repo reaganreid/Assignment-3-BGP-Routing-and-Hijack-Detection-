@@ -156,7 +156,7 @@ path_attribute_length
 path_attributes
 OrderedDict([('flag', 64), ('type', [1, 'ORIGIN']), ('length', 1), ('value', 2)])
 OrderedDict([('flag', 64), ('type', [2, 'AS_PATH']), ('length', 8), ('value', [OrderedDict([('type', [2, 'AS_SEQUENCE']), ('length', 3), ('value', ['293', '2914', '9498'])])])])
-OrderedDict([('flag', 64), ('type', [3, 'NEXT_HOP']), ('length', 4), ('value', '134.55.200.31')])
+OrderedDict([('flag', 64), ('type'[3, 'NEXT_HOP']), ('length, ', 4), ('value', '134.55.200.31')])
 OrderedDict([('flag', 192), ('type', [8, 'COMMUNITY']), ('length', 8), ('value', ['293:14', '293:46'])])
 
 
