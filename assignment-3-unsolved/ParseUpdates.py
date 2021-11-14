@@ -39,9 +39,16 @@ class ParseUpdates:
         You will update all these parameters as you complete checkpoints 1 & 2.
         """
         self.filename = filename
-        self.announcements, self.withdrawals = {}, {}
+        self.announcements = {
+            'timestamp' : []
+
+        }
+        self.withdrawals = {
+            'timestamp' : []
+        }
         self.n_announcements, self.n_withdrawals = 0, 0
         self.time_to_parse = 0
+
 
     def parse_updates(self):
         """
@@ -65,9 +72,7 @@ class ParseUpdates:
             self.__parse_announcement_updates(entry_timestamp, entry_source_peer, entry_bgpMessage)
             self.__parse_withdrawal_updates(entry_timestamp, entry_source_peer, entry_bgpMessage)
 
-
-        print(self.announcements)
-
+        print(self.n_announcements)
         #for item in entry_bgpMessage['path_attributes']:
         #    for node in item:
         #        print(node)
@@ -104,10 +109,8 @@ class ParseUpdates:
         :return: True if announcements were properly recorded. False otherwise.
         """
         ###
-
-
-        self.n_announcements = bgp_message['path_attribute_length'] + self.n_announcements
-
+        
+        
         update = {}
         CIDR = []
         as_path_data = 0
@@ -118,9 +121,6 @@ class ParseUpdates:
 
         message_packet  = bgp_message['path_attributes']
         for item in message_packet:
-            if item['type'][1] == 'ORIGIN':
-                origin_length = item['length']
-                origin_value = item['value']
             if item['type'][1] == 'AS_PATH':
                 as_path_data = item['value']
             if item['type'][1] == 'NEXT_HOP':
@@ -129,18 +129,24 @@ class ParseUpdates:
         for item in bgp_message['nlri']:
             CIDR.append(ipaddress.ip_address(item['prefix']))
 
+        self.n_announcements = self.n_announcements + len(CIDR)
+
         update = {
-            'timestamp' : timestamp,
             'range' : CIDR,
             'next_hop' : next_hop_data,
             'peer_as' : peer_as,
             'as_path' : as_path_data
         }
-        
-        if as_path_data != 0:
-            self.announcements = self.announcements | update
+        #bamboozlin = str(timestamp) + "_data"
 
-        ###
+        #if timestamp not in self.announcements['timestamp']:
+        #    self.announcements['timestamp'].append(timestamp)
+        #    self.announcements.update({bamboozlin : [update]})
+        #else:
+        #    temp = self.announcements[str(bamboozlin)]
+        #    temp.append(update)
+        #    self.announcements[str(bamboozlin)] = temp
+
         return True
 
     def __parse_withdrawal_updates(self, timestamp, peer_as, bgp_message):
@@ -167,7 +173,29 @@ class ParseUpdates:
         :return: True if announcements were properly recorded. False otherwise.
         """
         ###
-        # fill in your code here
+        update = {}
+        CIDR = []
+
+        if bgp_message['withdrawn_routes'] != []:
+            for item in bgp_message['withdrawn_routes']:
+                self.n_withdrawals = 1 + self.n_withdrawals
+                ip = item['prefix']
+                CIDR.append(ipaddress.ip_address(item['prefix']))
+
+        update = {
+            'range' : CIDR,
+            'peer_as' : peer_as,
+        }
+        #bamboozlin = str(timestamp) + "_data"
+
+        #if timestamp not in self.announcements['timestamp']:
+        #    self.announcements['timestamp'].append(timestamp)
+        #    self.announcements.update({bamboozlin : [update]})
+        #else:
+        #    temp = self.announcements[str(bamboozlin)]
+        #    temp.append(update)
+        #    self.announcements[str(bamboozlin)] = temp
+
         ###
         return True
 
@@ -212,7 +240,7 @@ def main():
     logging.info("Routes announced: %d | Routes withdrawn: %d" % (pu.n_announcements, pu.n_withdrawals))
     updates = pu.get_next_updates()
     while True:
-        next_updates = updates.next()
+        next_updates = updates.__next__()
         if next_updates['timestamp'] is None:
             logging.info("No more updates to process in file: %s" % pu.filename)
             break

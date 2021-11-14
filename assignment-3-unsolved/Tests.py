@@ -29,7 +29,7 @@ class Tests:
                                                                             self.pu.n_withdrawals))
         updates = self.pu.get_next_updates()
         while True:
-            next_updates = updates.next()
+            next_updates = updates.__next__()
             if next_updates['timestamp'] is None:
                 logging.info("[CP1] No more updates to process in file: %s" % self.pu.filename)
                 break
@@ -45,7 +45,7 @@ class Tests:
         self.pu.parse_updates()
         updates = self.pu.get_next_updates()
         while True:
-            next_updates = updates.next()
+            next_updates = updates.__next__()
             if next_updates['timestamp'] is None:
                 logging.info("[CP2] No more updates to process in file: %s" % self.pu.filename)
                 break
