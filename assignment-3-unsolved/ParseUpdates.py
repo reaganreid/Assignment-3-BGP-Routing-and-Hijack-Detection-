@@ -13,6 +13,7 @@ build your routing table.
 
 """
 
+import ipaddress
 import mrtparse
 import json
 import time
@@ -65,6 +66,7 @@ class ParseUpdates:
             self.__parse_withdrawal_updates(entry_timestamp, entry_source_peer, entry_bgpMessage)
 
 
+        print(self.announcements)
 
         #for item in entry_bgpMessage['path_attributes']:
         #    for node in item:
@@ -102,8 +104,15 @@ class ParseUpdates:
         :return: True if announcements were properly recorded. False otherwise.
         """
         ###
-        self.n_announcements = bgp_message['length'] + self.n_announcements
+
+
+        self.n_announcements = bgp_message['path_attribute_length'] + self.n_announcements
+
         update = {}
+        CIDR = []
+        as_path_data = 0
+        next_hop_data = 0
+
         #for item in bgp_message:
         #    print(bgp_message[item])
 
@@ -117,12 +126,19 @@ class ParseUpdates:
             if item['type'][1] == 'NEXT_HOP':
                 next_hop_data = item['value']
 
+        for item in bgp_message['nlri']:
+            CIDR.append(ipaddress.ip_address(item['prefix']))
+
         update = {
             'timestamp' : timestamp,
-            'peer_as' : peer_as,
-            'as_path' : as_path_data,
+            'range' : CIDR,
             'next_hop' : next_hop_data,
+            'peer_as' : peer_as,
+            'as_path' : as_path_data
         }
+        
+        if as_path_data != 0:
+            self.announcements = self.announcements | update
 
         ###
         return True
