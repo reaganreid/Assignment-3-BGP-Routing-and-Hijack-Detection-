@@ -1,5 +1,0 @@
-11-14 03:47 INFO     Tests.py:19  : [CP1] Executing tests for checkpoint 1.
-11-14 03:47 INFO     ParseUpdates.py:81  : Time taken to parse all records: 5 second(s)
-11-14 03:47 INFO     ParseUpdates.py:82  : Routes announced: 74851 | Routes withdrawn: 8393
-11-14 03:47 INFO     Tests.py:27  : [CP1] Time taken to parse all records: 5 second(s)
-11-14 03:47 INFO     Tests.py:28  : [CP1] Routes announced: 74851 | Routes withdrawn: 8393
