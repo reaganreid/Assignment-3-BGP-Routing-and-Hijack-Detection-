@@ -40,11 +40,8 @@ class ParseUpdates:
         """
         self.filename = filename
         self.announcements = {
-            'timestamp' : []
-
         }
         self.withdrawals = {
-            'timestamp' : []
         }
         self.n_announcements, self.n_withdrawals = 0, 0
         self.time_to_parse = 0
@@ -72,7 +69,6 @@ class ParseUpdates:
             self.__parse_announcement_updates(entry_timestamp, entry_source_peer, entry_bgpMessage)
             self.__parse_withdrawal_updates(entry_timestamp, entry_source_peer, entry_bgpMessage)
 
-        print(self.n_announcements)
         #for item in entry_bgpMessage['path_attributes']:
         #    for node in item:
         #        print(node)
@@ -108,39 +104,41 @@ class ParseUpdates:
         :param bgp_message: BGP message containing all updates.
         :return: True if announcements were properly recorded. False otherwise.
         """
-        ###
-        
-        
+        ###        
         update = {}
         CIDR = []
         as_path_data = []
         next_hop_data = []
 
-        #for item in bgp_message:
-        #    print(bgp_message[item])
-
-        message_packet  = bgp_message['path_attributes']
-        for item in message_packet:
-            if item['type'][1] == 'AS_PATH':
-                as_path_data.append(item['value'])
-            if item['type'][1] == 'NEXT_HOP':
-                next_hop_data.append(item['value'])
-
-        for item in bgp_message['nlri']:
-            CIDR.append(ipaddress.ip_address(item['prefix']))
-
-        self.n_announcements = self.n_announcements + len(CIDR)
-
-        update = {
-            'timestamp' : timestamp,
-            'range' : CIDR,
-            'next_hop' : next_hop_data,
-            'peer_as' : peer_as,
-            'as_path' : as_path_data
-        }
-
-
         
+        message_packet  = bgp_message['path_attributes']
+        if message_packet != []:
+            for item in message_packet:
+                if item['type'][1] == 'AS_PATH':
+                    as_path_data.append(item['value'])
+                if item['type'][1] == 'NEXT_HOP':
+                    next_hop_data.append(item['value'])
+
+            for item in bgp_message['nlri']:
+                CIDR.append(ipaddress.ip_address(item['prefix']))
+
+            self.n_announcements = self.n_announcements + len(CIDR)
+
+            update = {
+                'timestamp' : timestamp,
+                'range' : CIDR,
+                'next_hop' : next_hop_data,
+                'peer_as' : peer_as,
+                'as_path' : as_path_data
+            }
+        
+            time = timestamp[0]
+
+            if time not in self.announcements:
+                self.announcements.update( {time : []})
+                self.announcements[time].append(update)
+            else:
+                self.announcements[time].append(update)
 
         return True
 
@@ -176,28 +174,25 @@ class ParseUpdates:
                 self.n_withdrawals = 1 + self.n_withdrawals
                 ip = item['prefix']
                 CIDR.append(ipaddress.ip_address(item['prefix']))
-
-        update = {
+            
+            update = {
+            'timestamp' : timestamp,
             'range' : CIDR,
             'peer_as' : peer_as,
-        }
-        #bamboozlin = str(timestamp) + "_data"
+            }
+            time = timestamp[0]
 
-        #if timestamp not in self.announcements['timestamp']:
-        #    self.announcements['timestamp'].append(timestamp)
-        #    self.announcements.update({bamboozlin : [update]})
-        #else:
-        #    temp = self.announcements[str(bamboozlin)]
-        #    temp.append(update)
-        #    self.announcements[str(bamboozlin)] = temp
+            if time not in self.withdrawals:
+                self.withdrawals.update( {time : []})
+                self.withdrawals[time].append(update)
+            else:
+                self.withdrawals[time].append(update)
 
-        ###
         return True
 
     def get_next_updates(self):
         """
         You do not need to implement anything in this method.
-
         This method simply yields the next collection of announcements and
         withdrawals when called. Records yielded are sorted by time.
         :return:
