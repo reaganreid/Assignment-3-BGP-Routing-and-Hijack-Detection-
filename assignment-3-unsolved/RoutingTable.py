@@ -85,22 +85,21 @@ class RoutingTable:
         ###
         timestamp = announcement['timestamp'][0]
         destination = announcement['range']
-
         self.total_updates_received = self.total_updates_received + 1
+
+
         if self.time_of_earliest_update == sys.maxsize:
             self.time_of_earliest_update = timestamp
-        
         if timestamp < self.time_of_earliest_update and not(timestamp > self.time_of_latest_update):
             self.time_of_earliest_update = timestamp
         elif timestamp > self.time_of_latest_update:
             self.time_of_latest_update = timestamp
 
+
         if destination not in self.routing_table:
             self.routing_table.update( {destination : []})
             #self.routing_table[destination].append(announcement['as_path']['value']['value'])
-            for item in announcement['as_path']:
-                for node in item:
-                    self.routing_table.update( {destination : announcement})
+            self.routing_table.update( {destination : announcement})
 
         elif destination in self.routing_table:
             for item in announcement['as_path']:
@@ -146,14 +145,20 @@ class RoutingTable:
         """
         ###
         timestamp = withdrawal['timestamp'][0]
-        destination = withdrawal['range']['prefix']
+        destination = withdrawal['range']
+        w_source = withdrawal['peer_as']
+        self.total_updates_received = self.total_updates_received + 1
+
 
         if destination not in self.routing_table:
-            print('skip')
             return False
         else:
-            print('hit')
-        
+            a_source = self.routing_table[destination]['peer_as']
+            if w_source == a_source:
+                self.total_paths_changed = self.total_paths_changed + 1
+                del self.routing_table[destination]
+
+
         ###
 
     def measure_reachability(self):
