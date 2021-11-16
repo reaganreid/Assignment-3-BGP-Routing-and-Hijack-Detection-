@@ -120,25 +120,23 @@ class ParseUpdates:
                     next_hop_data.append(item['value'])
 
             for item in bgp_message['nlri']:
-                CIDR.append(ipaddress.ip_address(item['prefix']))
-
-            self.n_announcements = self.n_announcements + len(CIDR)
-
-            update = {
+                update = {
                 'timestamp' : timestamp,
-                'range' : CIDR,
+                'range' : ipaddress.ip_address(item['prefix']),
                 'next_hop' : next_hop_data,
                 'peer_as' : peer_as,
                 'as_path' : as_path_data
             }
-        
-            time = timestamp[0]
+                time = timestamp[0]
+                if time not in self.announcements:
+                    self.announcements.update( {time : []})
+                    self.announcements[time].append(update)
+                else:
+                    self.announcements[time].append(update)
 
-            if time not in self.announcements:
-                self.announcements.update( {time : []})
-                self.announcements[time].append(update)
-            else:
-                self.announcements[time].append(update)
+                CIDR.append(ipaddress.ip_address(item['prefix']))
+
+            self.n_announcements = self.n_announcements + len(CIDR)
 
         return True
 
@@ -173,20 +171,20 @@ class ParseUpdates:
             for item in bgp_message['withdrawn_routes']:
                 self.n_withdrawals = 1 + self.n_withdrawals
                 ip = item['prefix']
-                CIDR.append(ipaddress.ip_address(item['prefix']))
-            
-            update = {
-            'timestamp' : timestamp,
-            'range' : CIDR,
-            'peer_as' : peer_as,
-            }
-            time = timestamp[0]
+                update = {
+                'timestamp' : timestamp,
+                'range' : CIDR,
+                'peer_as' : peer_as,
+                }
+                time = timestamp[0]
 
-            if time not in self.withdrawals:
-                self.withdrawals.update( {time : []})
-                self.withdrawals[time].append(update)
-            else:
-                self.withdrawals[time].append(update)
+                if time not in self.withdrawals:
+                    self.withdrawals.update( {time : []})
+                    self.withdrawals[time].append(update)
+                else:
+                    self.withdrawals[time].append(update)
+
+                CIDR.append(ipaddress.ip_address(item['prefix']))
 
         return True
 
