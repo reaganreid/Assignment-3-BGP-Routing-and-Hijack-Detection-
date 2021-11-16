@@ -10,8 +10,10 @@ implement methods to read a supplied MRT file and extract specific information
 about announced and withdrawn routes. You will then use this information to
 build your routing table.
 
+
 """
 
+import ipaddress
 import mrtparse
 import json
 import time
@@ -37,9 +39,13 @@ class ParseUpdates:
         You will update all these parameters as you complete checkpoints 1 & 2.
         """
         self.filename = filename
-        self.announcements, self.withdrawals = {}, {}
+        self.announcements = {
+        }
+        self.withdrawals = {
+        }
         self.n_announcements, self.n_withdrawals = 0, 0
         self.time_to_parse = 0
+
 
     def parse_updates(self):
         """
@@ -52,10 +58,21 @@ class ParseUpdates:
 
         :return: True if parsing was completed successfully. False otherwise.
         """
+            
         start_time = time.time()
-        ###
-        # fill in your code here
-        ###
+
+        for entry in mrtparse.Reader(self.filename):
+            entry_data = entry.data
+            entry_timestamp = entry_data['timestamp']
+            entry_source_peer = entry_data['peer_as']
+            entry_bgpMessage = entry_data['bgp_message']
+            self.__parse_announcement_updates(entry_timestamp, entry_source_peer, entry_bgpMessage)
+            self.__parse_withdrawal_updates(entry_timestamp, entry_source_peer, entry_bgpMessage)
+
+        #for item in entry_bgpMessage['path_attributes']:
+        #    for node in item:
+        #        print(node)
+
         self.time_to_parse = time.time() - start_time
         logging.info("Time taken to parse all records: %d second(s)" % self.time_to_parse)
         logging.info("Routes announced: %d | Routes withdrawn: %d" % (self.n_announcements, self.n_withdrawals))
@@ -87,9 +104,40 @@ class ParseUpdates:
         :param bgp_message: BGP message containing all updates.
         :return: True if announcements were properly recorded. False otherwise.
         """
-        ###
-        # fill in your code here
-        ###
+        ###        
+        update = {}
+        CIDR = []
+        as_path_data = []
+        next_hop_data = []
+
+        
+        message_packet  = bgp_message['path_attributes']
+        if message_packet != []:
+            for item in message_packet:
+                if item['type'][1] == 'AS_PATH':
+                    as_path_data.append(item['value'])
+                if item['type'][1] == 'NEXT_HOP':
+                    next_hop_data.append(item['value'])
+
+            for item in bgp_message['nlri']:
+                update = {
+                'timestamp' : timestamp,
+                'range' : ipaddress.ip_address(item['prefix']),
+                'next_hop' : next_hop_data,
+                'peer_as' : peer_as,
+                'as_path' : as_path_data
+            }
+                time = timestamp[0]
+                if time not in self.announcements:
+                    self.announcements.update( {time : []})
+                    self.announcements[time].append(update)
+                else:
+                    self.announcements[time].append(update)
+
+                CIDR.append(ipaddress.ip_address(item['prefix']))
+
+            self.n_announcements = self.n_announcements + len(CIDR)
+
         return True
 
     def __parse_withdrawal_updates(self, timestamp, peer_as, bgp_message):
@@ -116,14 +164,33 @@ class ParseUpdates:
         :return: True if announcements were properly recorded. False otherwise.
         """
         ###
-        # fill in your code here
-        ###
+        update = {}
+        CIDR = []
+
+        if bgp_message['withdrawn_routes'] != []:
+            for item in bgp_message['withdrawn_routes']:
+                self.n_withdrawals = 1 + self.n_withdrawals
+                ip = item['prefix']
+                update = {
+                'timestamp' : timestamp,
+                'range' : CIDR,
+                'peer_as' : peer_as,
+                }
+                time = timestamp[0]
+
+                if time not in self.withdrawals:
+                    self.withdrawals.update( {time : []})
+                    self.withdrawals[time].append(update)
+                else:
+                    self.withdrawals[time].append(update)
+
+                CIDR.append(ipaddress.ip_address(item['prefix']))
+
         return True
 
     def get_next_updates(self):
         """
         You do not need to implement anything in this method.
-
         This method simply yields the next collection of announcements and
         withdrawals when called. Records yielded are sorted by time.
         :return:
@@ -161,7 +228,7 @@ def main():
     logging.info("Routes announced: %d | Routes withdrawn: %d" % (pu.n_announcements, pu.n_withdrawals))
     updates = pu.get_next_updates()
     while True:
-        next_updates = updates.next()
+        next_updates = updates.__next__()
         if next_updates['timestamp'] is None:
             logging.info("No more updates to process in file: %s" % pu.filename)
             break

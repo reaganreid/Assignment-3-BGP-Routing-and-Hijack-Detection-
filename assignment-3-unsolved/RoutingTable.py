@@ -208,7 +208,7 @@ def main():
     # pu.to_json_helper_function("./test.json")
     updates = pu.get_next_updates()
     while True:
-        next_updates = updates.next()
+        next_updates = updates.__next__()
         if next_updates['timestamp'] is None:
             logging.info("No more updates to process in file: %s" % pu.filename)
             break
