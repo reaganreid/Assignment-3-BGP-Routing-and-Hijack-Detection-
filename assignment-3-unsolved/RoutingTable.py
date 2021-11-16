@@ -84,7 +84,10 @@ class RoutingTable:
         """
         ###
         timestamp = announcement['timestamp'][0]
-        destination = announcement['range']
+        destination =ipaddress.ip_address( announcement['range']['prefix'])
+        
+
+
         self.total_updates_received = self.total_updates_received + 1
 
 
@@ -113,8 +116,6 @@ class RoutingTable:
             if len(path) < len(curr_path):
                 self.routing_table.update({destination : announcement})
                 self.total_paths_changed = self.total_paths_changed + 1
-
-        
         
         
 
@@ -143,7 +144,7 @@ class RoutingTable:
         """
         ###
         timestamp = withdrawal['timestamp'][0]
-        destination = withdrawal['range']
+        destination =ipaddress.ip_address( withdrawal['range']['prefix'])
         w_source = withdrawal['peer_as']
         self.total_updates_received = self.total_updates_received + 1
 
@@ -268,8 +269,8 @@ def main():
                 rt.apply_withdrawal(withdrawal)
     rt.measure_reachability()
     rt.helper_print_routing_table_descriptions()
-
     rt.helper_print_routing_table_descriptions(collapse=True)
+
     for destination in ["8.8.8.8", "125.161.0.1"]:
         paths = rt.find_path_to_destination(unicode(destination))
         for idx, path in enumerate(paths):
