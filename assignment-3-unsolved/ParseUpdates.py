@@ -173,7 +173,7 @@ class ParseUpdates:
                 ip = item['prefix']
                 update = {
                 'timestamp' : timestamp,
-                'range' : item,
+                'range' : ipaddress.ip_address(item['prefix']),
                 'peer_as' : peer_as,
                 }
                 time = timestamp[0]

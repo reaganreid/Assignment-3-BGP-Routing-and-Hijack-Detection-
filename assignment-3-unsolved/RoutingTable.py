@@ -13,6 +13,7 @@ entries.
 
 """
 
+from typing import Annotated
 from ParseUpdates import ParseUpdates
 import sys
 import ipaddress
@@ -106,7 +107,7 @@ class RoutingTable:
                 for node in item:
                     path = node['value']
         
-            temp = self.routing_table[destination]
+            temp = self.routing_table[destination]['as_path']
             for item in temp:
                 for node in item:
                     curr_path = node['value']
@@ -115,8 +116,6 @@ class RoutingTable:
                 self.routing_table.update({destination : announcement})
                 self.total_paths_changed = self.total_paths_changed + 1
 
-        for key in self.routing_table:
-            print (key)
         
         
 
@@ -146,7 +145,15 @@ class RoutingTable:
         :return: True if no exceptions. False otherwise.
         """
         ###
-        # fill in your code here
+        timestamp = withdrawal['timestamp'][0]
+        destination = withdrawal['range']['prefix']
+
+        if destination not in self.routing_table:
+            print('skip')
+            return False
+        else:
+            print('hit')
+        
         ###
 
     def measure_reachability(self):
