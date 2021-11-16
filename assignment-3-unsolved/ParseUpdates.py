@@ -173,7 +173,7 @@ class ParseUpdates:
                 ip = item['prefix']
                 update = {
                 'timestamp' : timestamp,
-                'range' : CIDR,
+                'range' : item,
                 'peer_as' : peer_as,
                 }
                 time = timestamp[0]
@@ -184,7 +184,6 @@ class ParseUpdates:
                 else:
                     self.withdrawals[time].append(update)
 
-                CIDR.append(ipaddress.ip_address(item['prefix']))
 
         return True
 
