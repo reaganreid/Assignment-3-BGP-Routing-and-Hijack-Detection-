@@ -110,7 +110,6 @@ class ParseUpdates:
         as_path_data = []
         next_hop_data = []
 
-        
         message_packet  = bgp_message['path_attributes']
         if message_packet != []:
             for item in message_packet:
@@ -122,7 +121,7 @@ class ParseUpdates:
             for item in bgp_message['nlri']:
                 update = {
                 'timestamp' : timestamp,
-                'range' : ipaddress.ip_address(item['prefix']),
+                'range' : ipaddress.ip_network(item['prefix']),
                 'next_hop' : next_hop_data,
                 'peer_as' : peer_as,
                 'as_path' : as_path_data
@@ -171,9 +170,10 @@ class ParseUpdates:
             for item in bgp_message['withdrawn_routes']:
                 self.n_withdrawals = 1 + self.n_withdrawals
                 ip = item['prefix']
+                print(item)
                 update = {
                 'timestamp' : timestamp,
-                'range' : ipaddress.ip_address(item['prefix']),
+                'range' : ipaddress.ip_network(item['prefix']),
                 'peer_as' : peer_as,
                 }
                 time = timestamp[0]

@@ -98,7 +98,6 @@ class RoutingTable:
 
         if destination not in self.routing_table:
             self.routing_table.update( {destination : []})
-            #self.routing_table[destination].append(announcement['as_path']['value']['value'])
             self.routing_table.update( {destination : announcement})
 
         elif destination in self.routing_table:
@@ -117,7 +116,6 @@ class RoutingTable:
 
         
         
-
         
 
         ###
@@ -270,6 +268,7 @@ def main():
                 rt.apply_withdrawal(withdrawal)
     rt.measure_reachability()
     rt.helper_print_routing_table_descriptions()
+
     rt.helper_print_routing_table_descriptions(collapse=True)
     for destination in ["8.8.8.8", "125.161.0.1"]:
         paths = rt.find_path_to_destination(unicode(destination))
