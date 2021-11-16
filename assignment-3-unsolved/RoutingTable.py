@@ -178,7 +178,11 @@ class RoutingTable:
         :return:
         """
         ###
-        # fill in your code here
+        #need to find ip range for each ip address: need ip address and net mask??
+        #is cidr notation the same thing as finding the range?
+        #need to find cidr block given ip range 
+        #once we find cidr we can use ipaddress.collapseaddresses() -> list(ipaddress.collapseaddresses())
+        #count list and return count
         ###
 
     def collapse_routing_table(self):
