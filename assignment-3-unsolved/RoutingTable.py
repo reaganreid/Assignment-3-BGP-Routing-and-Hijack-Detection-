@@ -183,6 +183,10 @@ class RoutingTable:
         #need to find cidr block given ip range 
         #once we find cidr we can use ipaddress.collapseaddresses() -> list(ipaddress.collapseaddresses())
         #count list and return count
+        for item in self.routing_table:
+          collapsed = list(ipaddress.collapse_addresses(item))
+          count = len(collapsed)
+          self.reachability = count 
         ###
 
     def collapse_routing_table(self):
