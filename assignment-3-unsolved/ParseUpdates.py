@@ -131,6 +131,7 @@ class ParseUpdates:
                 if time not in self.announcements:
                     self.announcements.update( {time : []})
                     self.announcements[time].append(update)
+
                 else:
                     self.announcements[time].append(update)
                 self.n_announcements = self.n_announcements + 1

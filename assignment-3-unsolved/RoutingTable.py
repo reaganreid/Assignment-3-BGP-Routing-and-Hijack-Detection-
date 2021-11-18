@@ -87,8 +87,8 @@ class RoutingTable:
         temp = ( str(announcement['range']['prefix']) + '/' + str(announcement['range']['prefix_length']) )
         full_ip = ipaddress.ip_network(temp)
 
-        self.total_updates_received = self.total_updates_received + 1
 
+        self.total_updates_received = self.total_updates_received + 1
 
         if self.time_of_earliest_update == sys.maxsize:
             self.time_of_earliest_update = timestamp
@@ -101,7 +101,7 @@ class RoutingTable:
         if full_ip not in self.routing_table:
             self.routing_table.update( {full_ip : announcement})
 
-        elif full_ip in self.routing_table:
+        if full_ip in self.routing_table:
             for item in announcement['as_path']:
                 for node in item:
                     path = node['value']
@@ -110,11 +110,9 @@ class RoutingTable:
             for x in temp:
                 for y in x:
                     curr_path = y['value']
+                
 
-            print('path' ,len(path), path)
-            print('curr_path',len(path), curr_path)
-
-            if len(path) < len(curr_path):
+            if (len(path) < len(curr_path)):
                 self.total_paths_changed = self.total_paths_changed + 1
                 self.routing_table.update({full_ip : announcement})
         
@@ -147,6 +145,7 @@ class RoutingTable:
         timestamp = withdrawal['timestamp'][0]
         temp = ( str(withdrawal['range']['prefix']) + '/' + str(withdrawal['range']['prefix_length']) )
         full_ip = ipaddress.ip_network(temp)
+
         w_source = withdrawal['peer_as']
         self.total_updates_received = self.total_updates_received + 1
 
@@ -154,7 +153,7 @@ class RoutingTable:
             a_source = self.routing_table[full_ip]['peer_as']
             if w_source == a_source:
                 self.total_paths_changed = self.total_paths_changed + 1
-                self.routing_table.pop(full_ip)
+                #self.routing_table.pop(full_ip)
 
 
         ###
@@ -177,7 +176,11 @@ class RoutingTable:
         :return:
         """
         ###
-        # fill in your code here
+        for item in self.routing_table:
+            print(item)
+        
+  
+
         ###
 
     def collapse_routing_table(self):
@@ -268,6 +271,9 @@ def main():
                 rt.apply_withdrawal(withdrawal)
     rt.measure_reachability()
     rt.helper_print_routing_table_descriptions()
+    for item in rt.routing_table:
+        print(item)
+        print(rt.routing_table[item])
     rt.helper_print_routing_table_descriptions(collapse=True)
 
     for destination in ["8.8.8.8", "125.161.0.1"]:
