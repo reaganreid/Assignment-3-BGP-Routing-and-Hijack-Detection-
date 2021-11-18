@@ -84,9 +84,8 @@ class RoutingTable:
         """
         ###
         timestamp = announcement['timestamp'][0]
-        destination =ipaddress.ip_address( announcement['range']['prefix'])
-        
-
+        temp = ( str(announcement['range']['prefix']) + '/' + str(announcement['range']['prefix_length']) )
+        full_ip = ipaddress.ip_network(temp)
 
         self.total_updates_received = self.total_updates_received + 1
 
@@ -99,23 +98,25 @@ class RoutingTable:
             self.time_of_latest_update = timestamp
 
 
-        if destination not in self.routing_table:
-            self.routing_table.update( {destination : []})
-            self.routing_table.update( {destination : announcement})
+        if full_ip not in self.routing_table:
+            self.routing_table.update( {full_ip : announcement})
 
-        elif destination in self.routing_table:
+        elif full_ip in self.routing_table:
             for item in announcement['as_path']:
                 for node in item:
                     path = node['value']
         
-            temp = self.routing_table[destination]['as_path']
-            for item in temp:
-                for node in item:
-                    curr_path = node['value']
+            temp = self.routing_table[full_ip]['as_path']
+            for x in temp:
+                for y in x:
+                    curr_path = y['value']
+
+            print('path' ,len(path), path)
+            print('curr_path',len(path), curr_path)
 
             if len(path) < len(curr_path):
-                self.routing_table.update({destination : announcement})
                 self.total_paths_changed = self.total_paths_changed + 1
+                self.routing_table.update({full_ip : announcement})
         
         
 
@@ -144,18 +145,16 @@ class RoutingTable:
         """
         ###
         timestamp = withdrawal['timestamp'][0]
-        destination =ipaddress.ip_address( withdrawal['range']['prefix'])
+        temp = ( str(withdrawal['range']['prefix']) + '/' + str(withdrawal['range']['prefix_length']) )
+        full_ip = ipaddress.ip_network(temp)
         w_source = withdrawal['peer_as']
         self.total_updates_received = self.total_updates_received + 1
 
-
-        if destination not in self.routing_table:
-            return False
-        else:
-            a_source = self.routing_table[destination]['peer_as']
+        if full_ip in self.routing_table:
+            a_source = self.routing_table[full_ip]['peer_as']
             if w_source == a_source:
                 self.total_paths_changed = self.total_paths_changed + 1
-                del self.routing_table[destination]
+                self.routing_table.pop(full_ip)
 
 
         ###

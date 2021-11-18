@@ -111,14 +111,15 @@ class ParseUpdates:
         next_hop_data = []
 
         message_packet  = bgp_message['path_attributes']
-        if message_packet != []:
+        nlri = bgp_message['nlri']
+        if nlri != []:
             for item in message_packet:
                 if item['type'][1] == 'AS_PATH':
                     as_path_data.append(item['value'])
                 if item['type'][1] == 'NEXT_HOP':
                     next_hop_data.append(item['value'])
 
-            for item in bgp_message['nlri']:
+            for item in nlri:
                 update = {
                 'timestamp' : timestamp,
                 'range' : item,
@@ -132,10 +133,8 @@ class ParseUpdates:
                     self.announcements[time].append(update)
                 else:
                     self.announcements[time].append(update)
+                self.n_announcements = self.n_announcements + 1
 
-                CIDR.append(ipaddress.ip_address(item['prefix']))
-
-            self.n_announcements = self.n_announcements + len(CIDR)
 
         return True
 
