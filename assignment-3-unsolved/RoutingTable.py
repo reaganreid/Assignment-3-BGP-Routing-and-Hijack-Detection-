@@ -11,6 +11,7 @@ announcing AS), and compress your routing table by merging together equivalent
 entries.
 """
 
+from _typeshed import SupportsTrunc
 from typing import Annotated
 from ParseUpdates import ParseUpdates
 import sys
@@ -299,8 +300,10 @@ class RoutingTable:
                     'next_hop' : None,
                     'source_as' : None
                 }
-            
+                paths.append(struct)
+        
         paths =  sorted(paths, key = lambda i: i['prefix_len'], reverse=True)
+        print(paths)
         return paths
         ###
 
