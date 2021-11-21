@@ -11,7 +11,6 @@ announcing AS), and compress your routing table by merging together equivalent
 entries.
 """
 
-from _typeshed import SupportsTrunc
 from typing import Annotated
 from ParseUpdates import ParseUpdates
 import sys
