@@ -285,7 +285,7 @@ class RoutingTable:
                     for a in item:
                         path = a['value']
                 struct = {
-                    'prefix_len': int(str(key).split('/')[1]),
+                    'prefix_len': str(key).split('/')[1],
                     'as_path': path,
                     'next_hop' : content['next_hop'],
                     'source_as' : content['peer_as']
@@ -300,11 +300,11 @@ class RoutingTable:
                         'source_as' : None
                     }
             paths = [struct]
+            return(paths)
         else:
             paths =  sorted(paths, key = lambda i: i['prefix_len'], reverse=True)
-        
-        print(paths)
-        return(paths)
+            return(paths)
+
         ###
 
     def helper_print_routing_table_descriptions(self, collapse=False):
@@ -347,9 +347,8 @@ def main():
     rt.measure_reachability()
     rt.helper_print_routing_table_descriptions()
     rt.helper_print_routing_table_descriptions(collapse=True)
-
     for destination in ["8.8.8.8", "125.161.0.1"]:
-        paths = rt.find_path_to_destination(destination)
+        paths = rt.find_path_to_destination(unicode(destination))
         for idx, path in enumerate(paths):
             print(idx, destination, path)
 
