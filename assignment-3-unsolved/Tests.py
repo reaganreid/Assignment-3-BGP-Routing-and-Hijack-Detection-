@@ -4,6 +4,9 @@ from RoutingTable import RoutingTable
 from DetectHijacks import DetectHijacks
 import logging
 import argparse
+import sys
+if sys.version_info[0] >= 3:
+    unicode = str
 
 
 class Tests:
