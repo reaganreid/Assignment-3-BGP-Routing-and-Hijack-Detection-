@@ -177,9 +177,8 @@ class RoutingTable:
         """
         ###
         for item in self.routing_table:
-            print(item)
-        
-  
+            hosts = list(ipaddress.ip_network(item).hosts())
+            self.reachability = self.reachability + len(hosts)
 
         ###
 
@@ -254,7 +253,7 @@ class RoutingTable:
 
 
 def main():
-    pu = ParseUpdates(filename="./data/updates.20080219.0015.bz2")
+    pu = ParseUpdates(filename="/Users/akanwar/Assignment-3-BGP-Routing-and-Hijack-Detection-/assignment-3-unsolved/data/updates.20080219.0015.bz2")
     rt = RoutingTable()
     pu.parse_updates()
     # pu.to_json_helper_function("./test.json")
@@ -271,9 +270,6 @@ def main():
                 rt.apply_withdrawal(withdrawal)
     rt.measure_reachability()
     rt.helper_print_routing_table_descriptions()
-    for item in rt.routing_table:
-        print(item)
-        print(rt.routing_table[item])
     rt.helper_print_routing_table_descriptions(collapse=True)
 
     for destination in ["8.8.8.8", "125.161.0.1"]:

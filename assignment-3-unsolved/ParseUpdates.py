@@ -218,7 +218,7 @@ class ParseUpdates:
 
 
 def main():
-    pu = ParseUpdates(filename="./data/updates.20080219.0015.bz2")
+    pu = ParseUpdates(filename="/Users/akanwar/Assignment-3-BGP-Routing-and-Hijack-Detection-/assignment-3-unsolved/data/updates.20080219.0015.bz2")
     pu.parse_updates()
     pu.to_json_helper_function("./sample-mrt-in-json.json")
     logging.info("Time taken to parse all records: %d second(s)" % pu.time_to_parse)
