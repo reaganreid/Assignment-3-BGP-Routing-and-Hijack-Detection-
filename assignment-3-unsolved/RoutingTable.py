@@ -17,6 +17,7 @@ import sys
 import ipaddress
 import time
 import logging
+from collections import Counter
 
 root = logging.getLogger()
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(filename)s:%(lineno)-4d: %(message)s',
@@ -165,14 +166,14 @@ class RoutingTable:
         :return:
         """
         ###
-        #ips = set()
-        #for item in self.routing_table:
-            #hosts = list(ipaddress.ip_network(item).hosts())
-            #self.reachability = self.reachability + len(hosts)
-            #for item in hosts:
-                #ips.add(item)
+        ips = set()
+        for item in self.routing_table:
+            hosts = list(ipaddress.ip_network(item).hosts())
+            self.reachability = self.reachability + len(hosts)
+            for item in hosts:
+                ips.add(item)
 
-        #self.reachability = len(ips)
+        self.reachability = len(ips)
 
         ###
 
@@ -199,17 +200,45 @@ class RoutingTable:
         for key in new_table:
             ips.append(key)
 
-        for i in range (0, len(new_table)):
-            while (i+1) < len(self.routing_table):
-                this_key = ips[i]
-                next_key = ips[i+1]
-                this_data = new_table[this_key]
-                next_data = new_table[next_key]
+        for i in range (0, len(new_table.keys())):
+            while (i+1) < len(new_table.keys()):
+                try:
+                    this_key = ips[i]
+                    next_key = ips[i+1]
+                    this_data = new_table[this_key]
+                    next_data = new_table[next_key]
 
-                if this_key.subnet_of(next_key) == True:
-                    print('yeah')
-                    if (this_data['as_path'] == next_data['as_path']) and (this_data['next_hop'] == next_data['next_hop']):
-                        print('yes')
+                    if this_key.subnet_of(next_key) == True:
+                        if (this_data['as_path'] == next_data['as_path']) and (this_data['next_hop'] == next_data['next_hop']):
+                            for a in this_data['as_path']:
+                                for b in a:
+                                    this_aspath = b['value']
+                            for x in next_data['as_path']:
+                                for y in x:
+                                    next_aspath = y['value']
+                            
+                        if Counter(this_aspath) == Counter(next_aspath):
+                            new_table.pop(this_key)
+                            new_table[next_key]['timestamp'] == self.time_of_latest_update
+                            ips.pop(this_key)
+
+                    if next_key.subnet_of(this_key) == True:
+                        if (this_data['as_path'] == next_data['as_path']) and (this_data['next_hop'] == next_data['next_hop']):
+                            for a in this_data['as_path']:
+                                for b in a:
+                                    this_aspath = b['value']
+                            for x in next_data['as_path']:
+                                for y in x:
+                                    next_aspath = y['value']
+                            
+                        if Counter(this_aspath) == Counter(next_aspath):
+                            new_table.pop(next_key)
+                            new_table[this_key]['timestamp'] == self.time_of_latest_update
+                            ips.pop(next_key)
+
+                except KeyError:
+                    break
+        self.routing_table = new_table
 
 
             

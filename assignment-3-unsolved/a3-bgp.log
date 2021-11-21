@@ -1,7 +1,12 @@
-11-21 00:07 INFO     ParseUpdates.py:70  : Time taken to parse all records: 9 second(s)
-11-21 00:07 INFO     ParseUpdates.py:71  : Routes announced: 74851 | Routes withdrawn: 8393
-11-21 00:07 INFO     RoutingTable.py:277 : No more updates to process in file: ./data/updates.20080219.0015.bz2
-11-21 00:07 INFO     RoutingTable.py:265 : Earliest update seen: 1203380111, 	 Latest update seen: 1203381004
+11-21 00:41 INFO     Tests.py:19  : [CP4] Executing tests for checkpoint 4.
+11-21 00:41 INFO     ParseUpdates.py:70  : Time taken to parse all records: 4 second(s)
+11-21 00:41 INFO     ParseUpdates.py:71  : Routes announced: 74851 | Routes withdrawn: 8393
+11-21 00:41 INFO     Tests.py:50  : [CP2] No more updates to process in file: ./data/updates.20080219.0015.bz2
+11-21 00:43 INFO     RoutingTable.py:294 : Earliest update seen: 1203380111, 	 Latest update seen: 1203381004
 Total updates received: 83244, 	 Total number of path changes observed: 1705
 Total number of routing table entries currently in table: 6217
-Reachable addresses of the IPv4 space from current table: 0
+Reachable addresses of the IPv4 space from current table: 52621619
+11-21 00:47 INFO     RoutingTable.py:294 : Earliest update seen: 1203380111, 	 Latest update seen: 1203381004
+Total updates received: 83244, 	 Total number of path changes observed: 1705
+Total number of routing table entries currently in table: 6217
+Reachable addresses of the IPv4 space from current table: 52621619
