@@ -165,14 +165,14 @@ class RoutingTable:
         :return:
         """
         ###
-        ips = set()
-        for item in self.routing_table:
-            hosts = list(ipaddress.ip_network(item).hosts())
-            self.reachability = self.reachability + len(hosts)
-            for item in hosts:
-                ips.add(item)
+        #ips = set()
+        #for item in self.routing_table:
+            #hosts = list(ipaddress.ip_network(item).hosts())
+            #self.reachability = self.reachability + len(hosts)
+            #for item in hosts:
+                #ips.add(item)
 
-        self.reachability = len(ips)
+        #self.reachability = len(ips)
 
         ###
 
@@ -194,7 +194,29 @@ class RoutingTable:
         :return: True if no exceptions occurred. False if an exception occurred.
         """
         ###
-        # fill in your code here
+        new_table  = self.routing_table
+        ips = []
+        for key in new_table:
+            ips.append(key)
+
+        for i in range (0, len(new_table)):
+            while (i+1) < len(self.routing_table):
+                this_key = ips[i]
+                next_key = ips[i+1]
+                this_data = new_table[this_key]
+                next_data = new_table[next_key]
+
+                if this_key.subnet_of(next_key) == True:
+                    print('yeah')
+                    if (this_data['as_path'] == next_data['as_path']) and (this_data['next_hop'] == next_data['next_hop']):
+                        print('yes')
+
+
+            
+        
+
+                
+
         ###
 
     def find_path_to_destination(self, destination):
