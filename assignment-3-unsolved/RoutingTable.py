@@ -165,10 +165,14 @@ class RoutingTable:
         :return:
         """
         ###
+        ips = set()
         for item in self.routing_table:
             hosts = list(ipaddress.ip_network(item).hosts())
             self.reachability = self.reachability + len(hosts)
-  
+            for item in hosts:
+                ips.add(item)
+
+        self.reachability = len(ips)
 
         ###
 
