@@ -292,16 +292,17 @@ class RoutingTable:
                 }
                 paths.append(struct)
                     
-            else:
-                struct = {
-                    'prefix_len': None,
-                    'as_path': None,
-                    'next_hop' : None,
-                    'source_as' : None
-                }
-                paths.append(struct)
+        if not paths:
+            struct = {
+                        'prefix_len': None,
+                        'as_path': None,
+                        'next_hop' : None,
+                        'source_as' : None
+                    }
+            paths = [struct]
+        else:
+            paths =  sorted(paths, key = lambda i: i['prefix_len'], reverse=True)
         
-        paths =  sorted(paths, key = lambda i: i['prefix_len'], reverse=True)
         print(paths)
         return paths
         ###
