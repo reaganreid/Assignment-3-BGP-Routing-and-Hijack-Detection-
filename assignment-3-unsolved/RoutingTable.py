@@ -304,7 +304,7 @@ class RoutingTable:
             paths =  sorted(paths, key = lambda i: i['prefix_len'], reverse=True)
         
         print(paths)
-        return paths
+        return(paths)
         ###
 
     def helper_print_routing_table_descriptions(self, collapse=False):
