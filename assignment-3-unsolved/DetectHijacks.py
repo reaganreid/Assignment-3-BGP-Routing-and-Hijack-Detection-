@@ -72,7 +72,29 @@ class DetectHijacks:
         :return:
         """
         ###
-        # fill in your code here
+        #need a loop that goes through mrt_files and set pu to ParseUpdates(each entry in the mrt file)
+        #check suspicious ranges and log updates
+        pu = ParseUpdates(filename="./sample-logs/sample-mrt-in-json")
+        rt = RoutingTable()
+        pu.parse_updates()
+        # pu.to_json_helper_function("./test.json")
+        updates = pu.get_next_updates()
+        while True:
+            next_updates = updates.__next__()
+            if next_updates['timestamp'] is None:
+                break
+            else:
+                for announcement in next_updates["announcements"]:
+                    rt.apply_announcement(announcement)
+                for withdrawal in next_updates["withdrawals"]:
+                    rt.apply_withdrawal(withdrawal)
+        rt.measure_reachability()
+        rt.helper_print_routing_table_descriptions()
+        rt.helper_print_routing_table_descriptions(collapse=True)
+        for destination in ["8.8.8.8", "125.161.0.1"]:
+            paths = rt.find_path_to_destination(unicode(destination))
+            for idx, path in enumerate(paths):
+                print(idx, destination, path)
         ###
 
     def get_org(self, asn):
